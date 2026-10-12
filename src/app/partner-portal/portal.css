@@ -1,0 +1,241 @@
+/* ============================================================
+   Partner Accelerator Portal — premium visual system
+   Pure presentation. GPU-accelerated transforms/opacity only.
+   ============================================================ */
+
+@property --pp-ang {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+/* ---------- ambient environment ---------- */
+
+@keyframes pp-aurora-a {
+    0%   { transform: translate3d(-8%, -4%, 0) scale(1); }
+    50%  { transform: translate3d(5%, 7%, 0) scale(1.12); }
+    100% { transform: translate3d(-8%, -4%, 0) scale(1); }
+}
+@keyframes pp-aurora-b {
+    0%   { transform: translate3d(6%, 3%, 0) scale(1.08); }
+    50%  { transform: translate3d(-5%, -7%, 0) scale(1); }
+    100% { transform: translate3d(6%, 3%, 0) scale(1.08); }
+}
+@keyframes pp-aurora-c {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    50%  { transform: translate3d(-7%, 5%, 0) scale(1.18); }
+    100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.pp-aurora {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(70px);
+    will-change: transform;
+}
+.pp-aurora-a { animation: pp-aurora-a 46s ease-in-out infinite; }
+.pp-aurora-b { animation: pp-aurora-b 58s ease-in-out infinite; }
+.pp-aurora-c { animation: pp-aurora-c 52s ease-in-out infinite; }
+
+/* faint architectural grid, panning almost imperceptibly */
+@keyframes pp-grid-pan {
+    from { background-position: 0 0; }
+    to   { background-position: 64px 64px; }
+}
+.pp-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 20%, transparent 75%);
+    animation: pp-grid-pan 90s linear infinite;
+}
+
+/* film-grain noise for depth */
+.pp-noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.04'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- entrances ---------- */
+
+@keyframes pp-fade-up {
+    from { opacity: 0; transform: translate3d(0, 16px, 0); filter: blur(4px); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+}
+.pp-reveal {
+    opacity: 0;
+    animation: pp-fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---------- floating surfaces ---------- */
+
+.pp-card {
+    position: relative;
+    transition:
+        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* cursor-tracked internal highlight */
+.pp-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    background: radial-gradient(
+        560px circle at var(--px, 50%) var(--py, 50%),
+        rgba(99, 102, 241, 0.06),
+        transparent 42%
+    );
+}
+.pp-card:hover::after { opacity: 1; }
+
+.pp-lift:hover { transform: translateY(-3px); }
+
+/* slow rotating hairline ring on hero surfaces */
+@keyframes pp-ring-rotate { to { --pp-ang: 360deg; } }
+.pp-ring::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+        from var(--pp-ang),
+        rgba(99, 102, 241, 0) 0%,
+        rgba(99, 102, 241, 0.22) 18%,
+        rgba(56, 189, 248, 0.16) 32%,
+        rgba(99, 102, 241, 0) 50%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    animation: pp-ring-rotate 16s linear infinite;
+    pointer-events: none;
+}
+
+/* ---------- tactile buttons ---------- */
+
+.pp-btn {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.35s ease;
+    will-change: transform;
+}
+.pp-btn:hover { transform: translateY(-2px); }
+.pp-btn:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
+}
+@keyframes pp-sweep {
+    from { transform: translateX(-160%) skewX(-18deg); }
+    to   { transform: translateX(280%) skewX(-18deg); }
+}
+.pp-btn-sweep {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: translateX(-160%) skewX(-18deg);
+    pointer-events: none;
+}
+.pp-btn:hover .pp-btn-sweep { animation: pp-sweep 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* ---------- inputs ---------- */
+
+.pp-input {
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background-color 0.3s ease;
+}
+.pp-input:hover { border-color: rgba(99, 102, 241, 0.35) !important; }
+
+/* ---------- chips ---------- */
+
+.pp-chip {
+    transition:
+        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.3s ease,
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+.pp-chip:hover { transform: translateY(-1px); }
+.pp-chip:active { transform: scale(0.96); }
+
+/* ---------- loading ---------- */
+
+@keyframes pp-spin { to { transform: rotate(360deg); } }
+.pp-spinner {
+    width: 30px;
+    height: 30px;
+    border-radius: 9999px;
+    background: conic-gradient(from 0deg, transparent 15%, rgba(99, 102, 241, 0.85));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+    animation: pp-spin 0.9s linear infinite;
+}
+
+@keyframes pp-shimmer {
+    from { background-position: -200% 0; }
+    to   { background-position: 200% 0; }
+}
+.pp-shimmer {
+    background: linear-gradient(90deg, rgba(15,23,42,0.04) 25%, rgba(15,23,42,0.09) 50%, rgba(15,23,42,0.04) 75%);
+    background-size: 200% 100%;
+    animation: pp-shimmer 1.6s ease-in-out infinite;
+}
+
+/* ---------- premium divider ---------- */
+
+.pp-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.12), rgba(99, 102, 241, 0.18), rgba(15, 23, 42, 0.12), transparent);
+}
+
+/* ---------- gentle float for decorative elements ---------- */
+@keyframes pp-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+}
+.pp-float { animation: pp-float 7s ease-in-out infinite; }
+
+/* ---------- overlays & drawers ---------- */
+
+@keyframes pp-slide-in-right {
+    from { opacity: 0; transform: translate3d(28px, 0, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.pp-drawer { animation: pp-slide-in-right 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes pp-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.pp-fade { animation: pp-fade-in 0.4s ease both; }
+
+/* ---------- accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .pp-reveal, .pp-drawer, .pp-fade { animation: none !important; opacity: 1 !important; }
+    .pp-aurora-a, .pp-aurora-b, .pp-aurora-c,
+    .pp-grid, .pp-float, .pp-ring::before { animation: none !important; }
+    .pp-btn:hover .pp-btn-sweep { animation: none !important; }
+    .pp-card, .pp-btn, .pp-chip { transition-duration: 0.01ms !important; }
+}
